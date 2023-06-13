@@ -11,11 +11,13 @@ import socketIOClient from "socket.io-client"
 const ENDPOINT = 
 window.location.host.indexOf("localhost") >= 0
 ? "http://127.0.0.1:4000"
-:window.location.host
-const ChatBox = () => {
+: window.location.host
+export default function ChatBox()  {
     const uiMessagesRef= useRef(null)
     const [userName, setUserName] = useState("")
-    const [messages, setMessages] = useState([{ from: "System", body: "Hello There, please ask youre question."}])
+    const [messages, setMessages] = useState([
+        { from: "System", body: "Hello There, please ask your question."}
+])
     const [isOpen, setIsOpen] = useState(false)
     const [messageBody, setMessageBody] = useState('')
     const [socket, setSocket] = useState(null)
@@ -25,12 +27,12 @@ const ChatBox = () => {
             uiMessagesRef.current.scrollBy({
                 top: uiMessagesRef.current.scrollHeight,
                 left: 0, 
-                behavior: "smooth"
+                behavior: "smooth",
             })
         }
         if(socket) {
             socket.emit("onLogin", { name: userName} )
-            socket.on("message",(data) => {
+            socket.on("message", (data) => {
                 setMessages([...messages, data])
             })
         }
@@ -48,35 +50,36 @@ const ChatBox = () => {
         setIsOpen(false)
     }
     const submitHandler = (e) => {
-e.preventDefault()
-if(!messageBody.trim()) {
-    alert("Error, message empty")
-} else {
-    setMessages([
-        ...messages,
-        {body: messageBody, from: userName, to: "Admin"},
-    ])
-    setTimeout(() => {
-        socket.emit("OnMessage" , {
-            body: messageBody, 
-            from: userName,
-            to: "Admin",
-        })
-    }, 1000)
-    setMessageBody("")
-
-}
+        e.preventDefault()
+        if(!messageBody.trim()) {
+            alert("Error, please type message")
+        } else {
+            setMessages([
+                ...messages,
+                {body: messageBody, 
+                    from: userName, 
+                    to: "Admin"},
+            ])
+            setTimeout(() => {
+                socket.emit("onMessage", {
+                    body: messageBody, 
+                    from: userName,
+                    to: "Admin",
+                })
+            }, 1000)
+            setMessageBody("")
+        }
     }
     return (
         <div className="chatbox">
-            {!isOpen ?(
+            {!isOpen ? (
             <Button variant="primary" onClick={supportHandler}> Chat</Button>
-            ): (
+            ):(
                     <Card>
                         <Card.Body>
                             <Row>
                                 <Col>
-                                <strong>Support</strong>
+                                <strong>Speak to Admin</strong>
                                 </Col>
                                 <Col className="text-end">
                                 <Button className="btn-sm btn-secondary" type="button" onClick={closeHandler}>X</Button>
@@ -84,27 +87,28 @@ if(!messageBody.trim()) {
                             </Row>
                             <hr />
                             <ListGroup ref={uiMessagesRef}>
-                           {messages.map((msg, index) => (
-                            <ListGroup.Item key={index}>
+                           {
+                           messages.map((msg, index) => (<ListGroup.Item key={index}>
                                 <strong>{`${msg.from}: `}</strong> {msg.body}
                             </ListGroup.Item>
                            )
 
                            )}
+                           </ListGroup>
                             <form onSubmit={submitHandler}>
                                 <InputGroup className="col-6">
                                     <FormControl
                                     value={messageBody}
                                     onChange={(e) => setMessageBody(e.target.value)}
                                     type="text"
-                                    placeHolder="type message">
+                                    placeholder="type message">
                                     </FormControl>
-                                    <Button type="submit" variant="primary">
+                                    <Button onClick={submitHandler} type="submit" variant="primary">
                                         Send
                                     </Button>
                                 </InputGroup>
                             </form>
-                            </ListGroup>
+                         
                         </Card.Body>
                     </Card>
             )}
@@ -112,4 +116,3 @@ if(!messageBody.trim()) {
         </div>
     )
 } 
-export default ChatBox

@@ -5,6 +5,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  
 }
 
 code {
@@ -12,14 +13,16 @@ code {
     monospace;
 }
 .chatbox {
-  color:black;
+  color:red;
   position: fixed;
-  right:1rem;
-  bottom:1rem;
+  /* right:1rem;
+  bottom:1rem; */
+
 }
 .chatbox .list-group {
   overflow:scroll;
-  max-height:20rem;
+  height:60vh;
+  width:186vh;
   margin-bottom:1rem;
 }
 .admin .list-group {

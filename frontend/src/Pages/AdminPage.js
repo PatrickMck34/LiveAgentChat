@@ -14,7 +14,7 @@ window.location.host.indexOf("localhost") >= 0
 ? "http://127.0.0.1:4000"
 : window.location.host
 
-export default function AdminPage() {
+ export default function AdminPage() {
     const [selectedUser, setSelectedUser] = useState({})
     const [socket, setSocket] = useState(null)
     const uiMessagesRef = useRef(null)
@@ -40,7 +40,8 @@ export default function AdminPage() {
                     const existUser = users.find((user) => user.name === data.from)
                     if(existUser) {
                         setUsers(
-                            users.map((user) => user.name === existUser.name? {...user, unread: true} : user)
+                            users.map((user) => 
+                            user.name === existUser.name ? {...user, unread: true} : user)
                         )
                     }
              }
@@ -90,8 +91,10 @@ export default function AdminPage() {
             alert("Error, please type message")
         } else {
             setMessages([
-                ...messages, 
-                {body: messageBody, from: "Admin", to: selectedUser.name },
+                ...messages,
+                {body: messageBody, 
+                    from: "Admin", 
+                    to: selectedUser.name},
             ])
             setTimeout(() => {
                 socket.emit("onMessage", {
@@ -110,7 +113,8 @@ export default function AdminPage() {
                 <Alert variant="info">No user found</Alert>
             )}
             <ListGroup>
-                {users.filter((x) => x.name !== "Admin")
+                {users
+                .filter((x) => x.name !== "Admin")
                 .map((user) => (
                     <ListGroup.Item
                     action
@@ -123,22 +127,23 @@ export default function AdminPage() {
                         selectedUser.name === user.name
                         ? user.online
                         ? "primary"
-                        :"secondary"
-                        :user.unread
-                        ?"danger"
-                        :user.online
-                        ?"primary"
-                        :"secondary"}
+                        : "secondary"
+                        : user.unread
+                        ? "danger"
+                        : user.online
+                        ? "primary"
+                        : "secondary"
+                    }
                         >
                             {selectedUser.name === user.name
-                            ?user.online
-                        ?"Online"
+                            ? user.online
+                        ? "Online"
                     : "Offline"
-                    :user.unread
-                    ?"New"
-                    :user.online
-                    ?"Online"
-                    :"Offline" }
+                    : user.unread
+                    ? "New"
+                    : user.online
+                    ? "Online"
+                    : "Offline" }
                     
 
                         </Badge>
@@ -160,7 +165,7 @@ export default function AdminPage() {
                     <div>
                         <h2> Chat With {selectedUser.name}</h2>
                         <ListGroup ref={uiMessagesRef}>
-                            {messages.length === 0 && (
+                            {!messages.length === 0 && (
                                 <ListGroup.Item>No Message</ListGroup.Item>
                             )}
                             {messages.map((msg, index) => (
@@ -176,7 +181,7 @@ export default function AdminPage() {
                                     value={messageBody}
                                     onChange={(e) => setMessageBody(e.target.value)}
                                     type="text"
-                                    placeHolder="type message">
+                                    placeholder="type message">
                                     </FormControl>
                                     <Button type="submit" variant="primary">
                                         Send

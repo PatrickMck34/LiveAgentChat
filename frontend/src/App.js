@@ -10,17 +10,17 @@ import AdminPage from './Pages/AdminPage';
 
 function App() {
   return (
-    <BrowserRouter>
+
    <div className="d-flex flex-column min-vh-100">
     <header>
     <Navbar bg="dark" variant="dark" expand="lg">
       <Container>
-        <Navbar.Brand> Support Desk</Navbar.Brand>
+        <Navbar.Brand> WeChat</Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto w-100 justify-content-end">
            
-          <a href="/admin" className="nav-link" target="_blank">Admin</a>
+          <a href="/admin" className="nav-link" target="_blank">Guest</a>
           </Nav>
         </Navbar.Collapse>
 
@@ -33,11 +33,11 @@ function App() {
 
   <Routes>
       <Route 
-      path="/" 
-      element={<HomePage />}>
+      path="/admin" element={<AdminPage />}>
       </Route>
       <Route 
-      path="/admin" element={<AdminPage />}>
+      path="/" 
+      element={<HomePage />}>
       </Route>
   </Routes>
         </Container>
@@ -50,7 +50,7 @@ function App() {
   </div>
 </footer>
    </div>
-    </BrowserRouter>
+ 
    
   );
 }

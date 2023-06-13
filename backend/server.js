@@ -5,15 +5,21 @@ import express from "express"
 
 const app = express()
 const __dirname = path.resolve()
-app.use(express.static(path.join(__dirname,"/frontend/build")))
+app.use(express.static(path.join(__dirname, "/frontend/build")))
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, "frontend/build/index.html"))
 })
+
 const httpServer = http.Server(app)
 const io = new Server(httpServer, {cors: {origin: "*" }})
+const PORT = process.env.PORT || 4000;
+httpServer.listen(PORT, () =>{
+    console.log(`Server Started at http://localhost:${PORT}`)
+})
 const users = [];
 
 io.on("connection", (socket) => {
+    
     socket.on("onLogin",(user) => {
         const updatedUser = {
             ...user, 
@@ -30,27 +36,29 @@ io.on("connection", (socket) => {
             users.push(updatedUser)
         }
         const admin = users.find((x) => x.name === "Admin" && x.online)
-        if(admin) {
-            io.to(admin.socketId).emit("updateUser", updatedUser)
-        }
-        if(updatedUser.name === "Admin") {
+       
+            io.to(user.socketId).emit("updateUser", updatedUser)
+        
+       
             io.to(updatedUser.socketId).emit("listUsers", users)
-        }
+       
     })
     socket.on("disconnect", () =>{
         const user = users.find((x) => x.socketId === socket.id)
         if(user) {
             user.online = false;
             const admin = users.find((x) => x.name ==="Admin" && x.online)
-            if(admin) {
-            io.to(admin.socketId).emit("updateUser", user)
-            }
+        
+            io.to(user.socketId).emit("updateUser", user)
+            
         }
     
     })
     socket.on("onUserSelected" , (user) => {
-        const admin = users.find((x) => x.name === user.name)
-        io.to(admin.socketId).emit("selectUser", existUser)
+       
+            const existUser = users.find((x) => x.name === user.name)
+            io.to(user.socketId).emit("selectUser", existUser)
+        
         
     })
     socket.on("onMessage", (message) => {
@@ -61,10 +69,10 @@ io.on("connection", (socket) => {
                 user.messages.push(message)
 
             }else {
-                io.to(socket.id).emit("message" , {
+                io.to(socket.id).emit("message", {
                     from: "System",
                     to: "Admin",
-                    body: "User is Not Online"
+                    body: "User is Not Online",
                 })
             }
         } else {
@@ -75,17 +83,13 @@ io.on("connection", (socket) => {
                 if(user) {
                     user.messages.push(message)
             }
-        } else {
+         else {
             io.to(socket.id).emit("message", {
                 from: "System",
                 to: message.from,
                 body: "Sorry Admin is not online",
             })
         }}
+    }
     })
-})
-const PORT = process.env.PORT || 4000;
-
-httpServer.listen(PORT, () =>{
-    console.log(`Server Started at http//localhost${PORT}`)
 })
